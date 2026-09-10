@@ -7,6 +7,10 @@
 ![Gemini](https://img.shields.io/badge/Google%20GenAI-Gemini%203.6%20Flash-orange)
 ![Test Coverage](https://img.shields.io/badge/Test%20Coverage-100%25-brightgreen.svg)
 
+<img 
+  src="https://raw.githubusercontent.com/Velang2003/Ticket-Triage-System/refs/heads/main/Ticket%20Triage%20System%20-%20HLD.png"
+  alt="Ticket Triage System - High Level System Design"
+  width="80%">
 An intelligent, asynchronous support ticket triage system that leverages **Google Gemini (GenAI)** to automatically classify, prioritize, and suggest resolutions for customer support requests.
 
 ---
