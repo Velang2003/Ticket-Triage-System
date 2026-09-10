@@ -47,8 +47,8 @@ jobs:
       DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/ticket_triage_test
       SYNC_DATABASE_URL: postgresql://postgres:password@localhost:5432/ticket_triage_test
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: gemini-2.0-flash
-      GEMINI_EMBEDDING_MODEL: text-embedding-004
+      GEMINI_MODEL: gemini-3.6-flash
+      GEMINI_EMBEDDING_MODEL: gemini-embedding-2
       LLM_TEMPERATURE: "0.1"
       LLM_MAX_TOKENS: "1024"
       LLM_RETRY_ATTEMPTS: "2"
@@ -115,8 +115,8 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/ticket_triage_postman
           SYNC_DATABASE_URL: postgresql://postgres:password@localhost:5432/ticket_triage_postman
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-2.0-flash
-          GEMINI_EMBEDDING_MODEL: text-embedding-004
+          GEMINI_MODEL: gemini-3.6-flash
+          GEMINI_EMBEDDING_MODEL: gemini-embedding-2
           LLM_TEMPERATURE: "0.1"
           LLM_MAX_TOKENS: "1024"
           LLM_RETRY_ATTEMPTS: "1"
