@@ -1,4 +1,5 @@
 """Classification repository — create and fetch classification records."""
+
 import uuid
 
 from sqlalchemy import select
@@ -54,4 +55,3 @@ async def get_pending_classifications(
         .limit(limit)
     )
     return list(result.scalars().all())
-

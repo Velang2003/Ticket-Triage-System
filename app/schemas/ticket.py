@@ -1,5 +1,5 @@
 """Ticket request/response Pydantic schemas."""
-from typing import Any
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.config import get_settings
@@ -79,4 +79,3 @@ class TicketListResponse(BaseModel):
     page: int
     page_size: int
     pages: int
-

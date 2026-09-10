@@ -1,9 +1,10 @@
 """AuditLog ORM model — SRS §4.5."""
+
 import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, ForeignKey, JSON, String
+from sqlalchemy import JSON, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,6 +13,7 @@ from app.models.base import Base, utcnow
 
 class AuditEventType(str):
     """Audit event type constants."""
+
     TICKET_CREATED = "ticket_created"
     CLASSIFIED = "classified"
     CLASSIFICATION_PENDING = "classification_pending"
@@ -26,9 +28,7 @@ class AuditLog(Base):
 
     __tablename__ = "audit_log"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     ticket_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("tickets.id", ondelete="CASCADE"),
@@ -43,4 +43,3 @@ class AuditLog(Base):
 
     # Relationship
     ticket: Mapped["Ticket"] = relationship("Ticket", back_populates="audit_logs")  # noqa: F821
-

@@ -1,6 +1,6 @@
 """Functional tests for knowledge articles API."""
+
 import pytest
-from unittest.mock import patch
 
 
 @pytest.mark.asyncio
@@ -8,7 +8,11 @@ async def test_add_article(client, auth_headers, mock_embedding_article):
     """POST /knowledge-articles returns 201."""
     response = await client.post(
         "/api/v1/knowledge-articles",
-        json={"title": "Password Reset Guide", "content": "Step 1: Go to login...", "category": "Account"},
+        json={
+            "title": "Password Reset Guide",
+            "content": "Step 1: Go to login...",
+            "category": "Account",
+        },
         headers=auth_headers,
     )
     assert response.status_code == 201
@@ -68,4 +72,3 @@ async def test_list_articles(client, auth_headers, mock_embedding_article):
     response = await client.get("/api/v1/knowledge-articles", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()["data"]["items"]) >= 1
-

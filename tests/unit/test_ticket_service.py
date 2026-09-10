@@ -1,6 +1,6 @@
 """Unit tests for ticket service — status transitions and pagination logic."""
+
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -29,6 +29,7 @@ async def test_invalid_transition_raises():
 
 def test_pagination_math():
     """Verify page count calculation for edge cases."""
+
     def pages(total, page_size):
         return max(1, (total + page_size - 1) // page_size)
 
@@ -46,4 +47,3 @@ async def test_update_ticket_status_not_found(db_session):
 
     with pytest.raises(LookupError):
         await update_ticket_status(db_session, uuid.uuid4(), TicketStatus.IN_PROGRESS)
-

@@ -1,4 +1,5 @@
 """KnowledgeArticle ORM model — SRS §4.3."""
+
 import json
 import uuid
 from datetime import datetime
@@ -32,6 +33,7 @@ class FlexibleVector(TypeDecorator):
     def load_dialect_impl(self, dialect):
         if dialect.name == "postgresql":
             from pgvector.sqlalchemy import Vector
+
             return dialect.type_descriptor(Vector(self.dim))
         return dialect.type_descriptor(Text())
 
@@ -61,16 +63,18 @@ class KnowledgeArticle(Base):
 
     __tablename__ = "knowledge_articles"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(
         FlexibleVector(EMBEDDING_DIM), nullable=True
     )
     category: Mapped[TicketCategory | None] = mapped_column(
-        Enum(TicketCategory, name="ticket_category", values_callable=lambda obj: [e.value for e in obj]),
+        Enum(
+            TicketCategory,
+            name="ticket_category",
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
         nullable=True,
         index=True,
     )

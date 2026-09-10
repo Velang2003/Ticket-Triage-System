@@ -3,22 +3,27 @@
 Uses the SYNC_DATABASE_URL from Settings for migrations.
 All models are imported so Alembic's autogenerate can detect them.
 """
-import os
+
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool, text
 
+from alembic import context
+
 # ── Import all models so autogenerate discovers every table ──
-from app.models import Base  # noqa: F401 — side-effect import
 from app.models import (  # noqa: F401
-    Ticket, Classification, KnowledgeArticle, ResolutionSuggestion, AuditLog
+    AuditLog,
+    Base,  # noqa: F401 — side-effect import
+    Classification,
+    KnowledgeArticle,
+    ResolutionSuggestion,
+    Ticket,
 )
 
 config = context.config
 
 # Inject sync DB URL from environment (overrides empty alembic.ini value)
-from app.core.config import get_settings
+from app.core.config import get_settings  # noqa: E402
 
 settings = get_settings()
 config.set_main_option("sqlalchemy.url", settings.sync_database_url)
@@ -63,4 +68,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-

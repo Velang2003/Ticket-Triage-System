@@ -1,4 +1,5 @@
 """Knowledge article service — add/update articles with automatic embedding."""
+
 import logging
 import uuid
 from typing import Any
@@ -48,7 +49,12 @@ async def update_article(
     article = await knowledge_article_repo.update_article(
         session,
         article_id,
-        {"title": new_title, "content": new_content, "category": new_category, "embedding": embedding},
+        {
+            "title": new_title,
+            "content": new_content,
+            "category": new_category,
+            "embedding": embedding,
+        },
     )
     logger.info("Knowledge article updated", extra={"article_id": str(article_id)})
     return _article_to_dict(article) if article else None
@@ -60,7 +66,9 @@ async def list_articles(
     page: int = 1,
     page_size: int = 20,
 ) -> list[dict[str, Any]]:
-    articles = await knowledge_article_repo.list_articles(session, category=category, page=page, page_size=page_size)
+    articles = await knowledge_article_repo.list_articles(
+        session, category=category, page=page, page_size=page_size
+    )
     return [_article_to_dict(a) for a in articles]
 
 
@@ -79,4 +87,3 @@ def _article_to_dict(a: Any) -> dict[str, Any]:
         "created_at": a.created_at.isoformat(),
         "updated_at": a.updated_at.isoformat(),
     }
-

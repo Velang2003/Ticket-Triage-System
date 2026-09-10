@@ -7,9 +7,9 @@ Responsibilities:
 - Install global exception handlers mapping domain errors to HTTP codes
 - Serve OpenAPI docs at /docs
 """
+
 import logging
 from contextlib import asynccontextmanager
-from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -102,4 +102,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

@@ -1,4 +1,5 @@
 """Edge-case validation tests (SRS FR-8)."""
+
 import pytest
 
 
@@ -63,7 +64,11 @@ async def test_invalid_email_rejected(client, auth_headers):
     """Invalid email format should return 400 (our validation handler) or 422."""
     response = await client.post(
         "/api/v1/tickets",
-        json={"subject": "Test", "description": "Test description", "submitter_email": "not-an-email"},
+        json={
+            "subject": "Test",
+            "description": "Test description",
+            "submitter_email": "not-an-email",
+        },
         headers=auth_headers,
     )
     assert response.status_code in (400, 422)
@@ -88,4 +93,3 @@ async def test_unknown_category_filter_returns_empty(client, auth_headers):
         headers=auth_headers,
     )
     assert response.status_code in (400, 422)
-

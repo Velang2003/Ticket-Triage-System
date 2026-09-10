@@ -1,4 +1,5 @@
 """Unit tests for classification service (SRS §8.2)."""
+
 import uuid
 from unittest.mock import AsyncMock, patch
 
@@ -14,9 +15,18 @@ async def test_classify_ticket_success(db_session, mock_llm_classify):
 
     # Patch repo calls so we don't need a real DB row
     with (
-        patch("app.services.classification_service.classification_repo.create_classification", new_callable=AsyncMock) as mock_create,
-        patch("app.services.classification_service.ticket_repo.update_ticket_classification", new_callable=AsyncMock),
-        patch("app.services.classification_service.audit_log_repo.create_entry", new_callable=AsyncMock),
+        patch(
+            "app.services.classification_service.classification_repo.create_classification",
+            new_callable=AsyncMock,
+        ) as mock_create,
+        patch(
+            "app.services.classification_service.ticket_repo.update_ticket_classification",
+            new_callable=AsyncMock,
+        ),
+        patch(
+            "app.services.classification_service.audit_log_repo.create_entry",
+            new_callable=AsyncMock,
+        ),
     ):
         await classification_service.classify_ticket(
             session=db_session,
@@ -41,8 +51,14 @@ async def test_classify_ticket_pending_on_llm_failure(db_session):
             "app.services.classification_service.generate_json",
             side_effect=RuntimeError("LLM timeout"),
         ),
-        patch("app.services.classification_service.classification_repo.create_classification", new_callable=AsyncMock) as mock_create,
-        patch("app.services.classification_service.audit_log_repo.create_entry", new_callable=AsyncMock),
+        patch(
+            "app.services.classification_service.classification_repo.create_classification",
+            new_callable=AsyncMock,
+        ) as mock_create,
+        patch(
+            "app.services.classification_service.audit_log_repo.create_entry",
+            new_callable=AsyncMock,
+        ),
     ):
         # Should NOT raise
         await classification_service.classify_ticket(
@@ -65,8 +81,14 @@ async def test_classify_ticket_invalid_enum_becomes_pending(db_session):
             "app.services.classification_service.generate_json",
             return_value={"category": "UNKNOWN_CAT", "priority": "High", "rationale": "..."},
         ),
-        patch("app.services.classification_service.classification_repo.create_classification", new_callable=AsyncMock) as mock_create,
-        patch("app.services.classification_service.audit_log_repo.create_entry", new_callable=AsyncMock),
+        patch(
+            "app.services.classification_service.classification_repo.create_classification",
+            new_callable=AsyncMock,
+        ) as mock_create,
+        patch(
+            "app.services.classification_service.audit_log_repo.create_entry",
+            new_callable=AsyncMock,
+        ),
     ):
         await classification_service.classify_ticket(
             session=db_session,
@@ -87,4 +109,3 @@ async def test_classify_ticket_all_categories():
             # Just verify they are valid enum values
             assert cat.value in {"Billing", "Technical", "Account", "Other"}
             assert pri.value in {"Low", "Medium", "High", "Critical"}
-

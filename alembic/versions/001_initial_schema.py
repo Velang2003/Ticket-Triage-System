@@ -6,10 +6,12 @@ Revision: 001
   resolution_suggestions, audit_log
 - Adds HNSW index on knowledge_articles.embedding for fast cosine search
 """
-from alembic import op
+
+import pgvector.sqlalchemy
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-import pgvector.sqlalchemy
+
+from alembic import op
 
 revision = "001"
 down_revision = None
@@ -143,9 +145,7 @@ def upgrade() -> None:
             server_default=sa.func.now(),
         ),
     )
-    op.create_index(
-        "ix_resolution_suggestions_ticket_id", "resolution_suggestions", ["ticket_id"]
-    )
+    op.create_index("ix_resolution_suggestions_ticket_id", "resolution_suggestions", ["ticket_id"])
 
     # ── audit_log ─────────────────────────────────────────────
     op.create_table(
@@ -179,4 +179,3 @@ def downgrade() -> None:
     op.execute("DROP TYPE IF EXISTS ticket_category")
     op.execute("DROP TYPE IF EXISTS ticket_priority")
     op.execute("DROP TYPE IF EXISTS ticket_status")
-

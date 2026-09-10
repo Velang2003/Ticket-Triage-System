@@ -1,4 +1,5 @@
 """Knowledge article request/response schemas."""
+
 from pydantic import BaseModel, Field
 
 
@@ -24,4 +25,3 @@ class ArticleResponse(BaseModel):
     category: str | None
     created_at: str
     updated_at: str
-

@@ -5,12 +5,12 @@ Rules enforced here:
 - `submitter_email` is redacted from every log record (NFR-5).
 - LLM request latency and outcome are always logged at INFO level.
 """
-import logging
-import json
-import sys
-from datetime import datetime, timezone
-from typing import Any
 
+import json
+import logging
+import sys
+from datetime import UTC, datetime
+from typing import Any
 
 REDACTED_FIELDS = {"submitter_email", "email"}
 
@@ -30,7 +30,7 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         log_entry: dict[str, Any] = {
-            "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+            "timestamp": datetime.now(tz=UTC).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
@@ -38,10 +38,26 @@ class JSONFormatter(logging.Formatter):
 
         # Include any `extra` keys attached to the log call
         skip = {
-            "name", "msg", "args", "created", "filename", "funcName",
-            "levelname", "levelno", "lineno", "module", "msecs",
-            "pathname", "process", "processName", "relativeCreated",
-            "stack_info", "thread", "threadName", "exc_info", "exc_text",
+            "name",
+            "msg",
+            "args",
+            "created",
+            "filename",
+            "funcName",
+            "levelname",
+            "levelno",
+            "lineno",
+            "module",
+            "msecs",
+            "pathname",
+            "process",
+            "processName",
+            "relativeCreated",
+            "stack_info",
+            "thread",
+            "threadName",
+            "exc_info",
+            "exc_text",
             "message",
         }
         for key, value in record.__dict__.items():
@@ -71,4 +87,3 @@ def configure_logging(level: str = "INFO") -> None:
     # Quieten noisy third-party loggers
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
-

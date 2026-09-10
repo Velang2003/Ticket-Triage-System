@@ -1,4 +1,5 @@
 """Async Gemini LLM client wrapper with retry and structured logging."""
+
 import asyncio
 import json
 import logging
@@ -80,7 +81,9 @@ async def generate_text(
             if attempt <= settings.llm_retry_attempts:
                 await asyncio.sleep(2 ** (attempt - 1))  # 1s, 2s
 
-    raise RuntimeError(f"LLM request failed after {settings.llm_retry_attempts + 1} attempts: {last_error}")
+    raise RuntimeError(
+        f"LLM request failed after {settings.llm_retry_attempts + 1} attempts: {last_error}"
+    )
 
 
 async def generate_json(prompt: str, retry_prompt: str | None = None) -> dict[str, Any]:
@@ -95,7 +98,10 @@ async def generate_json(prompt: str, retry_prompt: str | None = None) -> dict[st
     except ValueError as first_err:
         if retry_prompt is None:
             raise
-        logger.warning("JSON parse failed on first attempt, retrying with strict prompt", extra={"error": str(first_err)})
+        logger.warning(
+            "JSON parse failed on first attempt, retrying with strict prompt",
+            extra={"error": str(first_err)},
+        )
         raw = await generate_text(retry_prompt, temperature=0.0)
         try:
             return _parse_json(raw)
@@ -111,4 +117,3 @@ def _parse_json(text: str) -> dict[str, Any]:
         lines = cleaned.split("\n")
         cleaned = "\n".join(lines[1:-1]) if len(lines) > 2 else cleaned
     return json.loads(cleaned)
-

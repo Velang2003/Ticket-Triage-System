@@ -9,6 +9,7 @@ Steps:
 6. Persist Classification record + AuditLog entry.
 7. Denormalise category/priority back onto the Ticket row.
 """
+
 import logging
 import uuid
 
@@ -36,9 +37,7 @@ async def classify_ticket(
     Classify ticket and persist the result.
     Never raises — on total failure, marks classification as pending.
     """
-    prompt = prompts.CLASSIFICATION_PROMPT_TEMPLATE.format(
-        subject=subject, description=description
-    )
+    prompt = prompts.CLASSIFICATION_PROMPT_TEMPLATE.format(subject=subject, description=description)
     retry_prompt = prompts.CLASSIFICATION_RETRY_PROMPT_TEMPLATE.format(
         subject=subject, description=description
     )
@@ -96,9 +95,7 @@ async def classify_ticket(
         await _save_pending(session, ticket_id, "")
 
 
-async def _save_pending(
-    session: AsyncSession, ticket_id: uuid.UUID, note: str
-) -> None:
+async def _save_pending(session: AsyncSession, ticket_id: uuid.UUID, note: str) -> None:
     """Persist a pending classification and audit the failure."""
     await classification_repo.create_classification(
         session=session,
@@ -114,4 +111,3 @@ async def _save_pending(
         event_type=AuditEventType.CLASSIFICATION_PENDING,
         details={"reason": "LLM call failed or returned invalid response"},
     )
-

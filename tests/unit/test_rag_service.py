@@ -1,4 +1,5 @@
 """Unit tests for RAG service (SRS §8.3)."""
+
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -19,8 +20,14 @@ async def test_generate_suggestion_success(db_session, mock_embedding, mock_llm_
     fake_article.content = "Go to login page, click 'Forgot Password'..."
 
     with (
-        patch("app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[fake_article]),
-        patch("app.services.rag_service.resolution_suggestion_repo.create_suggestion", new_callable=AsyncMock) as mock_save,
+        patch(
+            "app.services.rag_service.knowledge_article_repo.find_similar_articles",
+            return_value=[fake_article],
+        ),
+        patch(
+            "app.services.rag_service.resolution_suggestion_repo.create_suggestion",
+            new_callable=AsyncMock,
+        ) as mock_save,
         patch("app.services.rag_service.audit_log_repo.create_entry", new_callable=AsyncMock),
     ):
         await rag_service.generate_suggestion(
@@ -39,8 +46,13 @@ async def test_generate_suggestion_no_articles(db_session, mock_embedding):
     ticket_id = uuid.uuid4()
 
     with (
-        patch("app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[]),
-        patch("app.services.rag_service.resolution_suggestion_repo.create_suggestion", new_callable=AsyncMock) as mock_save,
+        patch(
+            "app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[]
+        ),
+        patch(
+            "app.services.rag_service.resolution_suggestion_repo.create_suggestion",
+            new_callable=AsyncMock,
+        ) as mock_save,
     ):
         await rag_service.generate_suggestion(
             session=db_session,
@@ -64,4 +76,3 @@ async def test_generate_suggestion_embedding_failure_does_not_raise(db_session):
             subject="Test",
             description="Test",
         )
-

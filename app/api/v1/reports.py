@@ -1,4 +1,5 @@
 """Reporting endpoint — SRS FR-10."""
+
 import logging
 
 from fastapi import APIRouter, Depends, Query
@@ -7,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.auth import verify_api_key
 from app.db.session import get_db_session
 from app.schemas.common import ResponseEnvelope
-from app.schemas.report import ReportSummaryResponse
 from app.services.ticket_service import get_reporting_summary
 
 logger = logging.getLogger(__name__)
@@ -32,4 +32,3 @@ async def summary_report(
     """
     summary = await get_reporting_summary(session, from_date=from_date, to_date=to_date)
     return ResponseEnvelope.success(summary)
-

@@ -1,4 +1,5 @@
 """Application configuration — reads all settings from environment variables."""
+
 from functools import lru_cache
 
 from pydantic import Field
@@ -57,4 +58,3 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Return a cached singleton Settings instance."""
     return Settings()
-

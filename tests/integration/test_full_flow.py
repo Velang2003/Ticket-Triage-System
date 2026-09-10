@@ -9,9 +9,11 @@ Flow:
 5. Update status Open → In Progress → 200
 6. Attempt invalid transition → 409
 """
-import pytest
-from unittest.mock import patch, MagicMock
+
 import uuid
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -99,7 +101,9 @@ async def test_ticket_appears_in_list(
     mock_llm_suggest,
 ):
     """Created ticket appears in the paginated list."""
-    with patch("app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[]):
+    with patch(
+        "app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[]
+    ):
         create_resp = await client.post(
             "/api/v1/tickets", json=sample_ticket_payload, headers=auth_headers
         )
@@ -109,4 +113,3 @@ async def test_ticket_appears_in_list(
     assert list_resp.status_code == 200
     ids = [t["id"] for t in list_resp.json()["data"]["items"]]
     assert ticket_id in ids
-

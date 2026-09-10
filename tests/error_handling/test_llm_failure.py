@@ -1,6 +1,8 @@
 """Error-handling tests — LLM failure scenarios (SRS §8.5, NFR-2)."""
+
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, AsyncMock
 
 
 @pytest.mark.asyncio
@@ -37,10 +39,16 @@ async def test_ticket_saved_when_llm_fails(client, auth_headers, sample_ticket_p
 
 
 @pytest.mark.asyncio
-async def test_invalid_status_transition_returns_409(client, auth_headers, sample_ticket_payload, mock_llm_classify, mock_embedding, mock_llm_suggest):
+async def test_invalid_status_transition_returns_409(
+    client, auth_headers, sample_ticket_payload, mock_llm_classify, mock_embedding, mock_llm_suggest
+):
     """Invalid status transition must return 409 Conflict."""
-    with patch("app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[]):
-        create = await client.post("/api/v1/tickets", json=sample_ticket_payload, headers=auth_headers)
+    with patch(
+        "app.services.rag_service.knowledge_article_repo.find_similar_articles", return_value=[]
+    ):
+        create = await client.post(
+            "/api/v1/tickets", json=sample_ticket_payload, headers=auth_headers
+        )
     ticket_id = create.json()["data"]["id"]
 
     # Open → Resolved is not allowed
@@ -63,4 +71,3 @@ async def test_unknown_ticket_returns_404(client, auth_headers):
     )
     assert response.status_code == 404
     assert response.json()["status"] == "error"
-

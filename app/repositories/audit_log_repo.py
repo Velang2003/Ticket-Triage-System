@@ -1,4 +1,5 @@
 """Audit log repository — append-only event trail."""
+
 import uuid
 from typing import Any
 
@@ -25,14 +26,9 @@ async def create_entry(
     return entry
 
 
-async def get_audit_trail(
-    session: AsyncSession, ticket_id: uuid.UUID
-) -> list[AuditLog]:
+async def get_audit_trail(session: AsyncSession, ticket_id: uuid.UUID) -> list[AuditLog]:
     """Return the full ordered audit trail for a ticket."""
     result = await session.execute(
-        select(AuditLog)
-        .where(AuditLog.ticket_id == ticket_id)
-        .order_by(AuditLog.created_at.asc())
+        select(AuditLog).where(AuditLog.ticket_id == ticket_id).order_by(AuditLog.created_at.asc())
     )
     return list(result.scalars().all())
-

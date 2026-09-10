@@ -1,6 +1,6 @@
 """Resolution suggestion repository."""
+
 import uuid
-from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,4 +37,3 @@ async def get_latest_suggestion(
         .limit(1)
     )
     return result.scalar_one_or_none()
-

@@ -1,30 +1,30 @@
 """Ticket ORM model — SRS §4.1."""
+
 import enum
 import uuid
-from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, String, Text
+from sqlalchemy import Enum, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampMixin, utcnow
+from app.models.base import Base, TimestampMixin
 
 
-class TicketCategory(str, enum.Enum):
+class TicketCategory(enum.StrEnum):
     BILLING = "Billing"
     TECHNICAL = "Technical"
     ACCOUNT = "Account"
     OTHER = "Other"
 
 
-class TicketPriority(str, enum.Enum):
+class TicketPriority(enum.StrEnum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
     CRITICAL = "Critical"
 
 
-class TicketStatus(str, enum.Enum):
+class TicketStatus(enum.StrEnum):
     OPEN = "Open"
     IN_PROGRESS = "In Progress"
     RESOLVED = "Resolved"
@@ -45,21 +45,31 @@ class Ticket(TimestampMixin, Base):
 
     __tablename__ = "tickets"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     subject: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     submitter_email: Mapped[str] = mapped_column(String(255), nullable=False)
 
     category: Mapped[TicketCategory | None] = mapped_column(
-        Enum(TicketCategory, name="ticket_category", values_callable=lambda obj: [e.value for e in obj]), nullable=True
+        Enum(
+            TicketCategory,
+            name="ticket_category",
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
+        nullable=True,
     )
     priority: Mapped[TicketPriority | None] = mapped_column(
-        Enum(TicketPriority, name="ticket_priority", values_callable=lambda obj: [e.value for e in obj]), nullable=True
+        Enum(
+            TicketPriority,
+            name="ticket_priority",
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
+        nullable=True,
     )
     status: Mapped[TicketStatus] = mapped_column(
-        Enum(TicketStatus, name="ticket_status", values_callable=lambda obj: [e.value for e in obj]),
+        Enum(
+            TicketStatus, name="ticket_status", values_callable=lambda obj: [e.value for e in obj]
+        ),
         default=TicketStatus.OPEN,
         nullable=False,
     )
@@ -74,4 +84,3 @@ class Ticket(TimestampMixin, Base):
     audit_logs: Mapped[list["AuditLog"]] = relationship(  # noqa: F821
         "AuditLog", back_populates="ticket", cascade="all, delete-orphan"
     )
-

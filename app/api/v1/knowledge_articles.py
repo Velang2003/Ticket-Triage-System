@@ -1,6 +1,7 @@
 """Knowledge article API routes — 3 endpoints (SRS §5)."""
-import uuid
+
 import logging
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,7 +10,7 @@ from app.core.auth import verify_api_key
 from app.db.session import get_db_session
 from app.models.ticket import TicketCategory
 from app.schemas.common import ResponseEnvelope
-from app.schemas.knowledge_article import ArticleCreate, ArticleUpdate, ArticleResponse
+from app.schemas.knowledge_article import ArticleCreate, ArticleUpdate
 from app.services import knowledge_article_service
 
 logger = logging.getLogger(__name__)
@@ -84,4 +85,3 @@ async def list_articles(
         session, category=category, page=page, page_size=page_size
     )
     return ResponseEnvelope.success({"items": articles, "page": page, "page_size": page_size})
-

@@ -1,9 +1,10 @@
 """Services package."""
+
 from app.services import (
     classification_service,
+    knowledge_article_service,
     rag_service,
     ticket_service,
-    knowledge_article_service,
 )
 
 __all__ = [
@@ -12,4 +13,3 @@ __all__ = [
     "ticket_service",
     "knowledge_article_service",
 ]
-

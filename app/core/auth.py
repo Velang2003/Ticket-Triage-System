@@ -4,6 +4,7 @@ Every route injects `Depends(verify_api_key)`.
 The key is read from the `X-API-Key` request header and compared
 against the value in Settings.api_key.
 """
+
 import logging
 import secrets
 
@@ -35,4 +36,3 @@ async def verify_api_key(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid API key",
         )
-

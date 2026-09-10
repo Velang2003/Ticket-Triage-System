@@ -1,6 +1,7 @@
 """Ticket API routes — all 6 ticket endpoints (SRS §5)."""
-import uuid
+
 import logging
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +11,7 @@ from app.core.config import get_settings
 from app.db.session import get_db_session
 from app.models.ticket import TicketCategory, TicketPriority, TicketStatus
 from app.schemas.common import ResponseEnvelope
-from app.schemas.ticket import TicketCreate, TicketListResponse, TicketResponse, StatusUpdate
+from app.schemas.ticket import StatusUpdate, TicketCreate
 from app.services import ticket_service
 
 logger = logging.getLogger(__name__)
@@ -119,7 +120,9 @@ async def update_status(
     try:
         ticket = await ticket_service.update_ticket_status(session, ticket_id, new_status)
     except LookupError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Ticket {ticket_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Ticket {ticket_id} not found"
+        )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
     return ResponseEnvelope.success(ticket)
@@ -138,7 +141,9 @@ async def retrigger_classify(
     """Re-run classification for a ticket (useful when it was marked pending)."""
     ticket = await ticket_service.retrigger_classification(session, ticket_id)
     if ticket is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Ticket {ticket_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Ticket {ticket_id} not found"
+        )
     return ResponseEnvelope.success(ticket)
 
 
@@ -153,13 +158,15 @@ async def get_suggestion(
     _: None = Depends(verify_api_key),
 ) -> ResponseEnvelope:
     """Fetch the latest LLM-generated resolution suggestion for a ticket."""
-    from app.repositories import resolution_suggestion_repo
     # First verify ticket exists
     ticket = await ticket_service.get_ticket(session, ticket_id)
     if ticket is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Ticket {ticket_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Ticket {ticket_id} not found"
+        )
     suggestion = ticket.get("suggestion")
     if suggestion is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No suggestion found for this ticket")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="No suggestion found for this ticket"
+        )
     return ResponseEnvelope.success(suggestion)
-

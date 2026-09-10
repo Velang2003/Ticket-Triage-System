@@ -7,10 +7,10 @@ Strategy:
 - Provide a real async HTTP test client via httpx.
 - Auth header uses the real API key from Settings so tests always match the app.
 """
+
 import logging
-import uuid
-from typing import AsyncGenerator
-from unittest.mock import MagicMock, patch
+from collections.abc import AsyncGenerator
+from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
@@ -26,10 +26,10 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 logging.getLogger("sqlalchemy").setLevel(logging.WARNING)
 
 # ── App imports (after logger suppression) ────────────────────────────────────
-from app.core.config import get_settings
-from app.db.session import get_db_session
-from app.main import app
-from app.models.base import Base
+from app.core.config import get_settings  # noqa: E402
+from app.db.session import get_db_session  # noqa: E402
+from app.main import app  # noqa: E402
+from app.models.base import Base  # noqa: E402
 
 settings = get_settings()
 
@@ -64,6 +64,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     Return an httpx AsyncClient wired to the FastAPI app.
     Overrides the DB dependency with the test SQLite session.
     """
+
     async def override_db():
         yield db_session
 

@@ -1,4 +1,5 @@
 """Classification ORM model — SRS §4.2."""
+
 import uuid
 from datetime import datetime
 
@@ -16,9 +17,7 @@ class Classification(Base):
 
     __tablename__ = "classifications"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     ticket_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("tickets.id", ondelete="CASCADE"),
@@ -26,12 +25,22 @@ class Classification(Base):
         index=True,
     )
     predicted_category: Mapped[TicketCategory | None] = mapped_column(
-        sa.Enum(TicketCategory, native_enum=False, length=50, values_callable=lambda obj: [e.value for e in obj]),
+        sa.Enum(
+            TicketCategory,
+            native_enum=False,
+            length=50,
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
         nullable=True,
         comment="Null when classification is pending due to LLM failure",
     )
     predicted_priority: Mapped[TicketPriority | None] = mapped_column(
-        sa.Enum(TicketPriority, native_enum=False, length=50, values_callable=lambda obj: [e.value for e in obj]),
+        sa.Enum(
+            TicketPriority,
+            native_enum=False,
+            length=50,
+            values_callable=lambda obj: [e.value for e in obj],
+        ),
         nullable=True,
     )
     confidence_note: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -45,4 +54,3 @@ class Classification(Base):
 
     # Relationship
     ticket: Mapped["Ticket"] = relationship("Ticket", back_populates="classifications")  # noqa: F821
-

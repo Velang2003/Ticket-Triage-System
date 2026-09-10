@@ -1,10 +1,11 @@
 """Repositories package."""
+
 from app.repositories import (
-    ticket_repo,
+    audit_log_repo,
     classification_repo,
     knowledge_article_repo,
     resolution_suggestion_repo,
-    audit_log_repo,
+    ticket_repo,
 )
 
 __all__ = [
@@ -14,4 +15,3 @@ __all__ = [
     "resolution_suggestion_repo",
     "audit_log_repo",
 ]
-

@@ -1,4 +1,5 @@
 """Ticket repository — CRUD + filtered/paginated list."""
+
 import uuid
 from typing import Any
 
@@ -6,9 +7,13 @@ from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.ticket import Ticket, TicketCategory, TicketPriority, TicketStatus, VALID_TRANSITIONS
-from app.models.classification import Classification
-from app.models.resolution_suggestion import ResolutionSuggestion
+from app.models.ticket import (
+    VALID_TRANSITIONS,
+    Ticket,
+    TicketCategory,
+    TicketPriority,
+    TicketStatus,
+)
 
 
 async def create_ticket(session: AsyncSession, data: dict[str, Any]) -> Ticket:
@@ -59,10 +64,14 @@ async def list_tickets(
 
     offset = (page - 1) * page_size
     tickets = (
-        await session.execute(
-            base_query.order_by(Ticket.created_at.desc()).offset(offset).limit(page_size)
+        (
+            await session.execute(
+                base_query.order_by(Ticket.created_at.desc()).offset(offset).limit(page_size)
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     return list(tickets), total
 
@@ -101,8 +110,5 @@ async def update_ticket_classification(
 ) -> None:
     """Denormalise category/priority back onto the ticket row for fast filtering."""
     await session.execute(
-        update(Ticket)
-        .where(Ticket.id == ticket_id)
-        .values(category=category, priority=priority)
+        update(Ticket).where(Ticket.id == ticket_id).values(category=category, priority=priority)
     )
-

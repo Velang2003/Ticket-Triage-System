@@ -1,4 +1,5 @@
 """Health check endpoint — for uptime monitoring (SRS §5)."""
+
 import logging
 
 from fastapi import APIRouter, Depends
@@ -38,9 +39,10 @@ async def health_check(
     except Exception as exc:
         logger.warning("Health check: LLM client not initialised", extra={"error": str(exc)})
 
-    return ResponseEnvelope.success({
-        "status": "healthy" if (db_ok and llm_ok) else "degraded",
-        "database": "ok" if db_ok else "unavailable",
-        "llm_provider": "ok" if llm_ok else "unavailable",
-    })
-
+    return ResponseEnvelope.success(
+        {
+            "status": "healthy" if (db_ok and llm_ok) else "degraded",
+            "database": "ok" if db_ok else "unavailable",
+            "llm_provider": "ok" if llm_ok else "unavailable",
+        }
+    )

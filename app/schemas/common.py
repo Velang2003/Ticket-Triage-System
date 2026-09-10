@@ -1,5 +1,7 @@
 """Common response envelope — SRS §5.1."""
+
 from typing import Any, Generic, TypeVar
+
 from pydantic import BaseModel
 
 DataT = TypeVar("DataT")
@@ -12,6 +14,7 @@ class ErrorDetail(BaseModel):
 
 class ResponseEnvelope(BaseModel, Generic[DataT]):
     """Standard JSON envelope wrapping all API responses."""
+
     status: str  # "success" or "error"
     data: DataT | None = None
     error: ErrorDetail | None = None
@@ -21,6 +24,5 @@ class ResponseEnvelope(BaseModel, Generic[DataT]):
         return cls(status="success", data=data)
 
     @classmethod
-    def error(cls, code: str, message: str) -> "ResponseEnvelope":
+    def error(cls, code: str, message: str) -> "ResponseEnvelope":  # noqa: F811
         return cls(status="error", error=ErrorDetail(code=code, message=message))
-
