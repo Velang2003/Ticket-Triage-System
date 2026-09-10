@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL 16 with pgvector extension ─────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: ticket_triage_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ticket_triage
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ticket_triage"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── API Service ───────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticket_triage_api
+    env_file:
+      - .env
+    environment:
+      # Override DB URLs to use Docker service name
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/ticket_triage
+      SYNC_DATABASE_URL: postgresql://postgres:password@db:5432/ticket_triage
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  pgdata:

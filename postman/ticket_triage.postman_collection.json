@@ -1,0 +1,307 @@
+{
+  "info": {
+    "name": "Ticket Triage System",
+    "_postman_id": "ticket-triage-system-v1",
+    "description": "Contract tests for all 11 endpoints of the AI-Powered Ticket Triage System.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "api_key", "value": "change-me" },
+    { "key": "ticket_id", "value": "" },
+    { "key": "article_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Response envelope present', () => pm.expect(body).to.have.property('status'));",
+                  "pm.test('Database key present', () => pm.expect(body.data).to.have.property('database'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "POST /tickets (create)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"subject\": \"Cannot access billing portal\", \"description\": \"I click on billing but get a 403 error every time.\", \"submitter_email\": \"test@example.com\"}"
+            },
+            "url": "{{base_url}}/api/v1/tickets"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Success status', () => pm.expect(body.status).to.eql('success'));",
+                  "pm.test('Ticket ID present', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "pm.test('Status is Open', () => pm.expect(body.data.status).to.eql('Open'));",
+                  "pm.collectionVariables.set('ticket_id', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /tickets (missing auth)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"subject\": \"Test\", \"description\": \"Test\", \"submitter_email\": \"a@b.com\"}" },
+            "url": "{{base_url}}/api/v1/tickets"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('Status 401', () => pm.response.to.have.status(401));"] }
+            }
+          ]
+        },
+        {
+          "name": "GET /tickets/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+            "url": "{{base_url}}/api/v1/tickets/{{ticket_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Correct ticket returned', () => pm.expect(body.data.id).to.eql(pm.collectionVariables.get('ticket_id')));",
+                  "pm.test('Classification present', () => pm.expect(body.data).to.have.property('classification'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /tickets (list)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tickets?page=1&page_size=10",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Items array present', () => pm.expect(body.data.items).to.be.an('array'));",
+                  "pm.test('Total count present', () => pm.expect(body.data).to.have.property('total'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /tickets/:id/status (valid)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"In Progress\"}" },
+            "url": "{{base_url}}/api/v1/tickets/{{ticket_id}}/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status updated', () => pm.expect(pm.response.json().data.status).to.eql('In Progress'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /tickets/:id/status (invalid transition)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"Open\"}" },
+            "url": "{{base_url}}/api/v1/tickets/00000000-0000-0000-0000-000000000000/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('Status 404 or 409', () => pm.expect(pm.response.code).to.be.oneOf([404, 409]));"] }
+            }
+          ]
+        },
+        {
+          "name": "GET /tickets/:id/suggestion",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+            "url": "{{base_url}}/api/v1/tickets/{{ticket_id}}/suggestion"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 or 404', () => pm.expect(pm.response.code).to.be.oneOf([200, 404]));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Knowledge Articles",
+      "item": [
+        {
+          "name": "POST /knowledge-articles (create)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\": \"How to reset your password\", \"content\": \"Navigate to the login page and click Forgot Password. Enter your email and follow the instructions.\", \"category\": \"Account\"}"
+            },
+            "url": "{{base_url}}/api/v1/knowledge-articles"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Article ID present', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "pm.collectionVariables.set('article_id', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT /knowledge-articles/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"title\": \"Updated: How to reset your password\"}" },
+            "url": "{{base_url}}/api/v1/knowledge-articles/{{article_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Title updated', () => pm.expect(pm.response.json().data.title).to.include('Updated'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /knowledge-articles",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+            "url": "{{base_url}}/api/v1/knowledge-articles"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Items array present', () => pm.expect(pm.response.json().data.items).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "GET /reports/summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reports/summary?from_date=2026-01-01&to_date=2026-12-31",
+              "query": [
+                { "key": "from_date", "value": "2026-01-01" },
+                { "key": "to_date", "value": "2026-12-31" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Total count present', () => pm.expect(body.data).to.have.property('total'));",
+                  "pm.test('by_category present', () => pm.expect(body.data).to.have.property('by_category'));",
+                  "pm.test('by_priority present', () => pm.expect(body.data).to.have.property('by_priority'));",
+                  "pm.test('by_status present', () => pm.expect(body.data).to.have.property('by_status'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
