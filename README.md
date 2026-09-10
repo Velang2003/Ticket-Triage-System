@@ -1,4 +1,4 @@
-# AI-Powered Ticket Triage System 🚀
+# AI-Powered Ticket Triage System
 
 ![Python](https://img.shields.io/badge/Python-3.14-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)
@@ -11,7 +11,7 @@ An intelligent, asynchronous support ticket triage system that leverages **Googl
 
 ---
 
-## 📖 Overview
+##  Overview
 
 Customer support teams often spend countless hours manually reading, tagging, and routing incoming tickets. The **Ticket Triage System** automates this bottleneck using advanced Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG). 
 
@@ -20,7 +20,7 @@ When a user submits a ticket, the system asynchronously:
 2. **Prioritizes** the issue based on urgency and sentiment (Low, Medium, High, Critical).
 3. **Suggests** a resolution by finding relevant articles in the internal knowledge base using vector similarity search (`pgvector`), then generates a custom response for the agent.
 
-## ✨ Key Features
+##  Key Features
 
 - **Automated LLM Triage:** Uses `gemini-3.6-flash` for zero-shot categorization and priority assignment.
 - **RAG Resolution Suggestions:** Generates support responses using `gemini-embedding-2` and `pgvector` cosine similarity search over a vector database of knowledge articles.
@@ -29,13 +29,13 @@ When a user submits a ticket, the system asynchronously:
 - **Reporting Analytics:** Group volume by category, priority, and status using fast SQL aggregations.
 - **Hybrid Testing:** Pytest suite runs instantly using an in-memory SQLite database via a custom `FlexibleVector` fallback, while Newman verifies live API contracts against PostgreSQL.
 
-## 🎯 Use Cases
+##  Use Cases
 
 - **IT Service Desks:** Automatically route "Cannot connect to VPN" tickets to the Network team with a "High" priority, while suggesting troubleshooting steps from the internal wiki.
 - **SaaS Customer Support:** Instantly provide billing agents with a drafted response for "Refund request" tickets based on company policy articles.
 - **E-Commerce:** Triage missing order inquiries and generate empathetic, context-aware responses citing shipping FAQs.
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **Backend Framework:** FastAPI, Uvicorn
 - **Language:** Python 3.14
@@ -47,7 +47,7 @@ When a user submits a ticket, the system asynchronously:
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Prerequisites
 - Python 3.10+ (Tested on Python 3.14)
@@ -119,7 +119,7 @@ The interactive API documentation will be available at: **http://localhost:8000/
 
 ---
 
-## 💻 Working with the Project (API Demonstration)
+##  Working with the Project (API Demonstration)
 
 To test the AI triage, you must authenticate requests by passing the `X-API-Key` header matching your `.env` file (e.g., `X-API-Key: triage-secret-key-2026`).
 
@@ -180,7 +180,7 @@ Fetch the LLM-generated resolution suggestion for the agent to review before res
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 The project uses a dual-testing strategy.
 
@@ -204,7 +204,7 @@ newman run postman/ticket_triage.postman_collection.json \
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 Ticket-Triage-System/
