@@ -5,11 +5,12 @@ uvicorn[standard]>=0.29.0
 # ── Database ─────────────────────────────────────────────────
 sqlalchemy[asyncio]>=2.0.30
 asyncpg>=0.29.0
+psycopg2-binary>=2.9.9   # Sync driver used by Alembic migrations
 alembic>=1.13.1
 pgvector>=0.3.3
 
 # ── Settings & Config ────────────────────────────────────────
-pydantic>=2.7.0
+pydantic[email]>=2.7.0   # [email] installs email-validator for EmailStr
 pydantic-settings>=2.3.0
 python-dotenv>=1.0.1
 
