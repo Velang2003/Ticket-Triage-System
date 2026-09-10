@@ -94,6 +94,22 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
+    env:
+      API_KEY: postman-test-key
+      DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/ticket_triage_postman
+      SYNC_DATABASE_URL: postgresql://postgres:password@localhost:5432/ticket_triage_postman
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: gemini-3.6-flash
+      GEMINI_EMBEDDING_MODEL: gemini-embedding-2
+      LLM_TEMPERATURE: "0.1"
+      LLM_MAX_TOKENS: "1024"
+      LLM_RETRY_ATTEMPTS: "1"
+      RAG_TOP_K: "5"
+      DEFAULT_PAGE_SIZE: "20"
+      MAX_PAGE_SIZE: "100"
+      TICKET_SUBJECT_MAX_LEN: "200"
+      TICKET_DESCRIPTION_MAX_LEN: "5000"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -105,26 +121,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Alembic migrations
-        env:
-          SYNC_DATABASE_URL: postgresql://postgres:password@localhost:5432/ticket_triage_postman
         run: alembic upgrade head
 
       - name: Start API server
-        env:
-          API_KEY: postman-test-key
-          DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/ticket_triage_postman
-          SYNC_DATABASE_URL: postgresql://postgres:password@localhost:5432/ticket_triage_postman
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-3.6-flash
-          GEMINI_EMBEDDING_MODEL: gemini-embedding-2
-          LLM_TEMPERATURE: "0.1"
-          LLM_MAX_TOKENS: "1024"
-          LLM_RETRY_ATTEMPTS: "1"
-          RAG_TOP_K: "5"
-          DEFAULT_PAGE_SIZE: "20"
-          MAX_PAGE_SIZE: "100"
-          TICKET_SUBJECT_MAX_LEN: "200"
-          TICKET_DESCRIPTION_MAX_LEN: "5000"
         run: |
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 5
