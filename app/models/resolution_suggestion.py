@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import ARRAY, DateTime, ForeignKey, Text
+from sqlalchemy import DateTime, ForeignKey, JSON, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,8 +24,10 @@ class ResolutionSuggestion(Base):
         index=True,
     )
     suggested_text: Mapped[str] = mapped_column(Text, nullable=False)
+    # JSON works in both PostgreSQL and SQLite (test DB).
+    # Stored as a list of UUID strings, e.g. ["uuid1", "uuid2"]
     source_article_ids: Mapped[list[str]] = mapped_column(
-        ARRAY(UUID(as_uuid=False)),
+        JSON,
         nullable=False,
         default=list,
         comment="UUIDs of knowledge articles used to generate this suggestion",

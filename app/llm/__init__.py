@@ -4,3 +4,4 @@ from app.llm.embedding import get_embedding
 from app.llm import prompts
 
 __all__ = ["generate_text", "generate_json", "get_embedding", "prompts"]
+

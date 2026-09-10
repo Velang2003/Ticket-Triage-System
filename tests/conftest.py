@@ -5,29 +5,41 @@ Strategy:
 - Use an in-memory SQLite database for fast unit tests (no PostgreSQL required).
 - Provide mock LLM client and embedding functions as fixtures.
 - Provide a real async HTTP test client via httpx.
+- Auth header uses the real API key from Settings so tests always match the app.
 """
-import asyncio
-from typing import AsyncGenerator
-from unittest.mock import AsyncMock, MagicMock, patch
+import logging
 import uuid
+from typing import AsyncGenerator
+from unittest.mock import MagicMock, patch
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+# ── Silence noisy loggers before importing the app ───────────────────────────
+# app/main.py calls configure_logging(level="DEBUG") at import time when
+# DEBUG=true in .env.  We reset the loggers that flood the output here so
+# pytest's own log_level setting takes effect.
+logging.getLogger("aiosqlite").setLevel(logging.WARNING)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+logging.getLogger("sqlalchemy").setLevel(logging.WARNING)
+
+# ── App imports (after logger suppression) ────────────────────────────────────
+from app.core.config import get_settings
+from app.db.session import get_db_session
 from app.main import app
 from app.models.base import Base
-from app.db.session import get_db_session
+
+settings = get_settings()
 
 # ── Test database ─────────────────────────────────────────────────────────────
-# SQLite in-memory (no pgvector extension, so vector columns are skipped in unit tests)
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 
 @pytest_asyncio.fixture(scope="function")
 async def db_engine():
-    """Create a fresh in-memory SQLite engine per test."""
+    """Create a fresh in-memory SQLite engine per test function."""
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -39,7 +51,7 @@ async def db_engine():
 
 @pytest_asyncio.fixture(scope="function")
 async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
-    """Yield an async DB session backed by the test engine."""
+    """Yield an async DB session backed by the test SQLite engine."""
     factory = async_sessionmaker(bind=db_engine, expire_on_commit=False, class_=AsyncSession)
     async with factory() as session:
         yield session
@@ -50,7 +62,7 @@ async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """
     Return an httpx AsyncClient wired to the FastAPI app.
-    Overrides the DB dependency with the test session.
+    Overrides the DB dependency with the test SQLite session.
     """
     async def override_db():
         yield db_session
@@ -65,11 +77,15 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 # ── Auth header ───────────────────────────────────────────────────────────────
 @pytest.fixture
 def auth_headers() -> dict[str, str]:
-    """Return the X-API-Key header with the test key."""
-    return {"X-API-Key": "test-api-key"}
+    """
+    Return the X-API-Key header using the same key that the app reads from
+    Settings.  This ensures tests always authenticate correctly regardless of
+    what API_KEY is set to in .env.
+    """
+    return {"X-API-Key": settings.api_key}
 
 
-# ── Mock LLM ─────────────────────────────────────────────────────────────────
+# ── Mock LLM fixtures ─────────────────────────────────────────────────────────
 @pytest.fixture
 def mock_llm_classify():
     """Mock generate_json to return a valid classification response."""
@@ -92,7 +108,7 @@ def mock_llm_suggest():
 
 @pytest.fixture
 def mock_embedding():
-    """Mock get_embedding to return a zero vector (avoids real API calls)."""
+    """Mock get_embedding in rag_service to return a zero vector (no real API call)."""
     with patch("app.services.rag_service.get_embedding") as mock:
         mock.return_value = [0.0] * 768
         yield mock

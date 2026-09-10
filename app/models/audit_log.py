@@ -43,3 +43,4 @@ class AuditLog(Base):
 
     # Relationship
     ticket: Mapped["Ticket"] = relationship("Ticket", back_populates="audit_logs")  # noqa: F821
+

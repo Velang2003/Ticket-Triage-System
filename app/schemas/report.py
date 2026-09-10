@@ -9,3 +9,4 @@ class ReportSummaryResponse(BaseModel):
     by_status: dict[str, int]
     from_date: str | None
     to_date: str | None
+

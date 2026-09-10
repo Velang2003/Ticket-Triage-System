@@ -109,3 +109,4 @@ async def test_ticket_appears_in_list(
     assert list_resp.status_code == 200
     ids = [t["id"] for t in list_resp.json()["data"]["items"]]
     assert ticket_id in ids
+

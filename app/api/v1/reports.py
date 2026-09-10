@@ -32,3 +32,4 @@ async def summary_report(
     """
     summary = await get_reporting_summary(session, from_date=from_date, to_date=to_date)
     return ResponseEnvelope.success(summary)
+

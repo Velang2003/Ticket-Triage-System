@@ -35,3 +35,4 @@ async def get_audit_trail(
         .order_by(AuditLog.created_at.asc())
     )
     return list(result.scalars().all())
+

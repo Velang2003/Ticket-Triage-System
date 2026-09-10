@@ -12,3 +12,4 @@ __all__ = [
     "ticket_service",
     "knowledge_article_service",
 ]
+

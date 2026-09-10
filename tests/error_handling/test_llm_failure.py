@@ -63,3 +63,4 @@ async def test_unknown_ticket_returns_404(client, auth_headers):
     )
     assert response.status_code == 404
     assert response.json()["status"] == "error"
+

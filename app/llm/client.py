@@ -111,3 +111,4 @@ def _parse_json(text: str) -> dict[str, Any]:
         lines = cleaned.split("\n")
         cleaned = "\n".join(lines[1:-1]) if len(lines) > 2 else cleaned
     return json.loads(cleaned)
+

@@ -35,3 +35,4 @@ async def verify_api_key(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid API key",
         )
+

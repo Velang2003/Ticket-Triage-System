@@ -64,3 +64,4 @@ async def test_generate_suggestion_embedding_failure_does_not_raise(db_session):
             subject="Test",
             description="Test",
         )
+

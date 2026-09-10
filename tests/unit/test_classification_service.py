@@ -87,3 +87,4 @@ async def test_classify_ticket_all_categories():
             # Just verify they are valid enum values
             assert cat.value in {"Billing", "Technical", "Account", "Other"}
             assert pri.value in {"Low", "Medium", "High", "Critical"}
+

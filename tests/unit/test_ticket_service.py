@@ -46,3 +46,4 @@ async def test_update_ticket_status_not_found(db_session):
 
     with pytest.raises(LookupError):
         await update_ticket_status(db_session, uuid.uuid4(), TicketStatus.IN_PROGRESS)
+

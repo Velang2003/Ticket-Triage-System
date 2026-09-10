@@ -79,3 +79,4 @@ def _article_to_dict(a: Any) -> dict[str, Any]:
         "created_at": a.created_at.isoformat(),
         "updated_at": a.updated_at.isoformat(),
     }
+

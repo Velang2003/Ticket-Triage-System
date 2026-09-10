@@ -101,3 +101,4 @@ async def test_retrigger_classify(client, auth_headers, sample_ticket_payload, m
     response = await client.post(f"/api/v1/tickets/{ticket_id}/classify", headers=auth_headers)
     assert response.status_code == 200
     assert response.json()["data"]["id"] == ticket_id
+

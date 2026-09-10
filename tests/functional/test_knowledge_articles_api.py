@@ -68,3 +68,4 @@ async def test_list_articles(client, auth_headers, mock_embedding_article):
     response = await client.get("/api/v1/knowledge-articles", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()["data"]["items"]) >= 1
+

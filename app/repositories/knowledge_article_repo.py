@@ -73,7 +73,7 @@ async def find_similar_articles(
     query = (
         select(KnowledgeArticle)
         .where(KnowledgeArticle.embedding.is_not(None))
-        .order_by(KnowledgeArticle.embedding.cosine_distance(embedding))
+        .order_by(KnowledgeArticle.embedding.op('<=>')(embedding))
         .limit(top_k)
     )
     if category:
@@ -81,3 +81,4 @@ async def find_similar_articles(
 
     result = await session.execute(query)
     return list(result.scalars().all())
+

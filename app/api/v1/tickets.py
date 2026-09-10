@@ -162,3 +162,4 @@ async def get_suggestion(
     if suggestion is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No suggestion found for this ticket")
     return ResponseEnvelope.success(suggestion)
+

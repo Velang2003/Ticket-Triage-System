@@ -43,3 +43,4 @@ async def health_check(
         "database": "ok" if db_ok else "unavailable",
         "llm_provider": "ok" if llm_ok else "unavailable",
     })
+

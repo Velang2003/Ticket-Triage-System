@@ -46,3 +46,4 @@ logs/
 
 # Newman / Postman (keep collection files, ignore reports)
 newman/
+

@@ -93,3 +93,4 @@ def _format_articles(articles: list) -> str:
     for i, article in enumerate(articles, start=1):
         parts.append(f"[Article {i}] {article.title}\n{article.content[:1000]}")
     return "\n\n".join(parts)
+

@@ -221,3 +221,4 @@ def _suggestion_to_dict(s: ResolutionSuggestion | None) -> dict[str, Any] | None
         "source_article_ids": s.source_article_ids,
         "created_at": s.created_at.isoformat(),
     }
+

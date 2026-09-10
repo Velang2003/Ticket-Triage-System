@@ -2,6 +2,7 @@
 import uuid
 from datetime import datetime
 
+import sqlalchemy as sa
 from sqlalchemy import DateTime, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -25,10 +26,12 @@ class Classification(Base):
         index=True,
     )
     predicted_category: Mapped[TicketCategory | None] = mapped_column(
+        sa.Enum(TicketCategory, native_enum=False, length=50, values_callable=lambda obj: [e.value for e in obj]),
         nullable=True,
         comment="Null when classification is pending due to LLM failure",
     )
     predicted_priority: Mapped[TicketPriority | None] = mapped_column(
+        sa.Enum(TicketPriority, native_enum=False, length=50, values_callable=lambda obj: [e.value for e in obj]),
         nullable=True,
     )
     confidence_note: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -42,3 +45,4 @@ class Classification(Base):
 
     # Relationship
     ticket: Mapped["Ticket"] = relationship("Ticket", back_populates="classifications")  # noqa: F821
+

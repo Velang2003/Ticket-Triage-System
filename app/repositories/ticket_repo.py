@@ -105,3 +105,4 @@ async def update_ticket_classification(
         .where(Ticket.id == ticket_id)
         .values(category=category, priority=priority)
     )
+

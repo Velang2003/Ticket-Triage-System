@@ -17,12 +17,14 @@ async def get_embedding(text: str) -> list[float]:
     Uses Gemini text-embedding-004 model.
     Raises RuntimeError if the embedding call fails.
     """
+    from google.genai.types import EmbedContentConfig
     client = get_client()
     try:
         result = await asyncio.to_thread(
             client.models.embed_content,
             model=settings.gemini_embedding_model,
             contents=text,
+            config=EmbedContentConfig(output_dimensionality=768)
         )
         embedding = result.embeddings[0].values
         logger.debug(
@@ -36,3 +38,4 @@ async def get_embedding(text: str) -> list[float]:
             extra={"model": settings.gemini_embedding_model, "error": str(exc)},
         )
         raise RuntimeError(f"Embedding failed: {exc}") from exc
+

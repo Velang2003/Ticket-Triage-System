@@ -132,9 +132,9 @@ def upgrade() -> None:
         sa.Column("suggested_text", sa.Text, nullable=False),
         sa.Column(
             "source_article_ids",
-            postgresql.ARRAY(postgresql.UUID(as_uuid=False)),
+            postgresql.JSON,
             nullable=False,
-            server_default="{}",
+            server_default="[]",
         ),
         sa.Column(
             "created_at",
@@ -179,3 +179,4 @@ def downgrade() -> None:
     op.execute("DROP TYPE IF EXISTS ticket_category")
     op.execute("DROP TYPE IF EXISTS ticket_priority")
     op.execute("DROP TYPE IF EXISTS ticket_status")
+

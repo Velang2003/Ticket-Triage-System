@@ -10,3 +10,4 @@ __all__ = [
     "ArticleCreate", "ArticleUpdate", "ArticleResponse",
     "ReportSummaryResponse",
 ]
+

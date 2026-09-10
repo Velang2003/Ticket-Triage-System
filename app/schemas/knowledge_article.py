@@ -24,3 +24,4 @@ class ArticleResponse(BaseModel):
     category: str | None
     created_at: str
     updated_at: str
+

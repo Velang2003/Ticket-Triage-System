@@ -12,3 +12,4 @@ api_v1_router.include_router(tickets_router)
 api_v1_router.include_router(articles_router)
 api_v1_router.include_router(reports_router)
 api_v1_router.include_router(health_router)
+

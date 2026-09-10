@@ -53,13 +53,13 @@ class Ticket(TimestampMixin, Base):
     submitter_email: Mapped[str] = mapped_column(String(255), nullable=False)
 
     category: Mapped[TicketCategory | None] = mapped_column(
-        Enum(TicketCategory, name="ticket_category"), nullable=True
+        Enum(TicketCategory, name="ticket_category", values_callable=lambda obj: [e.value for e in obj]), nullable=True
     )
     priority: Mapped[TicketPriority | None] = mapped_column(
-        Enum(TicketPriority, name="ticket_priority"), nullable=True
+        Enum(TicketPriority, name="ticket_priority", values_callable=lambda obj: [e.value for e in obj]), nullable=True
     )
     status: Mapped[TicketStatus] = mapped_column(
-        Enum(TicketStatus, name="ticket_status"),
+        Enum(TicketStatus, name="ticket_status", values_callable=lambda obj: [e.value for e in obj]),
         default=TicketStatus.OPEN,
         nullable=False,
     )
@@ -74,3 +74,4 @@ class Ticket(TimestampMixin, Base):
     audit_logs: Mapped[list["AuditLog"]] = relationship(  # noqa: F821
         "AuditLog", back_populates="ticket", cascade="all, delete-orphan"
     )
+

@@ -32,3 +32,4 @@ async def test_health_check(client):
     assert body["status"] == "success"
     assert "database" in body["data"]
     assert "llm_provider" in body["data"]
+

@@ -23,3 +23,4 @@ class ResponseEnvelope(BaseModel, Generic[DataT]):
     @classmethod
     def error(cls, code: str, message: str) -> "ResponseEnvelope":
         return cls(status="error", error=ErrorDetail(code=code, message=message))
+

@@ -71,3 +71,4 @@ def configure_logging(level: str = "INFO") -> None:
     # Quieten noisy third-party loggers
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+
