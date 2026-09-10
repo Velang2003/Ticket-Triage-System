@@ -10,7 +10,8 @@
 <img 
   src="https://raw.githubusercontent.com/Velang2003/Ticket-Triage-System/refs/heads/main/Ticket%20Triage%20System%20-%20HLD.png"
   alt="Ticket Triage System - High Level System Design"
-  width="80%">
+  width="100%">
+  
 An intelligent, asynchronous support ticket triage system that leverages **Google Gemini (GenAI)** to automatically classify, prioritize, and suggest resolutions for customer support requests.
 
 ---
